@@ -41,6 +41,11 @@ void Tokenizer::parse(const QString &str)
     int line;
     ss >> line;
 
+    if (!ss.good() && !ss.eof())
+    {
+        throw "LACK OF LINE";
+    }
+
     if (line == 0)
     {
         if (ss.eof())
@@ -70,7 +75,7 @@ void Tokenizer::parse(const QString &str)
     {
         throw "LACK OF STATEMENT";
     }
-    else if (!ss.good() || line < 0)
+    else if (line < 0)
     {
         throw "INVALID LINE";
     }

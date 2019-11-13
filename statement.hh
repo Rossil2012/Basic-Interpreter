@@ -4,9 +4,6 @@
 #include <QString>
 #include "exp.hh"
 
-//Expression need to be deleted
-//delete execute()
-
 class Statement : public QObject
 {
     Q_OBJECT

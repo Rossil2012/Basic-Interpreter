@@ -13,10 +13,10 @@ class Tokenizer : public QObject
     Q_OBJECT
 private:
     Program *Parent;
-    void parse(const QString &str);
 public:
     Tokenizer(Program *parent);
 public slots:
+    void parse(const QString &str);
     void safe_parse(const QString &str);
 };
 
