@@ -1,10 +1,6 @@
 #include <QApplication>
-//#include "Console.hh"
-//#include "exp.hh"
 
 #include "mainwindow.hh"
-//#include "tokenizer.hh"
-//#include "Console.hh"
 
 int main(int argc, char *argv[])
 {

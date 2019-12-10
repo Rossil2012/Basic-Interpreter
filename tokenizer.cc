@@ -1,5 +1,8 @@
 #include "tokenizer.hh"
 
+const char* Keyword[] = {"REM", "LET", "PRINT", "INPUT", "GOTO", "IF", "END"};
+
+
 enum expType{CONST, IDF, COMP};
 
 Expression *makeEXP(const std::string &str, expType type)
@@ -37,8 +40,12 @@ void Tokenizer::safe_parse(const QString &str)
 void Tokenizer::parse(const QString &str)
 {
     std::stringstream ss(str.toStdString());
+    if (str.simplified() == "")
+    {
+        throw "EMPTY CODE";
+    }
 
-    int line;
+    int line = -100;
     ss >> line;
 
     if (!ss.good() && !ss.eof())
@@ -292,7 +299,8 @@ void Tokenizer::parse(const QString &str)
         QObject::connect(tmp, &Statement::sig_changeCursor, Parent, &Program::changeCursor, Qt::DirectConnection);
         QObject::connect(tmp, &Statement::sig_moveOn, Parent, &Program::moveOn, Qt::DirectConnection);
         QObject::connect(tmp, &Statement::sig_terminate, Parent, &Program::terminate, Qt::DirectConnection);
-        Parent->insert(line, tmp);
+        Parent->addStmt(line, tmp);
+        Parent->addCode(line, str);
     }
 }
 

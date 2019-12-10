@@ -9,6 +9,7 @@ class Program : public QObject
 {
 private:
     QMap<int, Statement *> Statements;
+    QMap<int, QString> Codes;
     Evalstate Vars;
     int Cursor;
     QMap<int, Statement *>::iterator ite_Cursor;
@@ -19,7 +20,9 @@ public:
     ~Program();
     void run();
     void clear();
-    void insert(int line, Statement *stmt);
+    void addStmt(int line, Statement *stmt);
+    void addCode(int line, const QString &code);
+    void printCode();
 public slots:
     void letVar(const QString &var, int value);
     void getVar(const QString &var, int &value, bool &varExist);

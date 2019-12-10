@@ -16,8 +16,15 @@ void Console::write(QString msg)
 void Console::keyPressEvent(QKeyEvent *event)
 {
     if (this->textCursor().hasSelection())
+    {
         return;
-    if (event->key() == Qt::Key_Return) {
+    }
+    if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
+    {
+        return;
+    }
+    if (event->key() == Qt::Key_Return) 
+    {
         QTextCursor cursor = this->textCursor();
         cursor.movePosition(QTextCursor::End);
         cursor.select(QTextCursor::LineUnderCursor);

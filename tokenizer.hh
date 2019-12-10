@@ -18,6 +18,7 @@ public:
 public slots:
     void parse(const QString &str);
     void safe_parse(const QString &str);
+    void dynamic_parse(const QString &str);
 };
 
 #endif // TOKENIZER_HH

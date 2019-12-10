@@ -8,12 +8,13 @@
 #include <QLabel>
 #include "program.hh"
 #include "tokenizer.hh"
+#include "Console.hh"
 
 class InputLine : public QLineEdit
 {
     Q_OBJECT
 public:
-    InputLine(QWidget *parent);
+    InputLine(QWidget *parent = nullptr);
 private slots:
     void sendCode();
 signals:
@@ -33,6 +34,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
 public slots:
     void parseCode(const QString &code);
+};
+
+class MainWindow2 : public QMainWindow
+{
+private:
+    Console View;
+public:
+    MainWindow2(QWidget *parent = nullptr);
 };
 
 #endif // MAINWINDOW_HH

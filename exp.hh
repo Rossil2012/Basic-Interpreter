@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 
+bool chkVar(const QString &var);
+
 class Stack
 {
 public:

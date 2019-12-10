@@ -18,6 +18,10 @@ void Remstmt::execute()
 Letstmt::Letstmt(const QString &lv, Expression *rv)
     : leftValue(lv), rightValue(rv)
 {
+    if (!chkVar(lv))
+    {
+        throw "INVALID VARIABLE NAME";
+    }
     connect(rv, &Expression::sig_getVar, this, &Letstmt::getVar, Qt::DirectConnection);
 }
 

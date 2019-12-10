@@ -27,15 +27,26 @@ void Program::run()
 void Program::clear()
 {
     Statements.clear();
+    Codes.clear();
     Vars.clear();
     Cursor = 0;
     ite_Cursor = Statements.begin();
     terminateFlag = false;
 }
 
-void Program::insert(int line, Statement *stmt)
+void Program::addStmt(int line, Statement *stmt)
 {
     Statements.insert(line, stmt);
+}
+
+void Program::addCode(int line, const QString &code)
+{
+    Codes.insert(line, code);
+}
+
+void Program::printCode()
+{
+
 }
 
 void Program::execute()
