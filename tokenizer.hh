@@ -7,18 +7,19 @@
 #include "program.hh"
 #include "statement.hh"
 #include "exp.hh"
+#include "Console.hh"
 
 class Tokenizer : public QObject
 {
     Q_OBJECT
 private:
-    Program *Parent;
+    Program *PG;
 public:
-    Tokenizer(Program *parent);
+    Tokenizer(Program *pg);
 public slots:
     void parse(const QString &str);
     void safe_parse(const QString &str);
-    void dynamic_parse(const QString &str);
+    //void dynamic_parse(const QString &str);
 };
 
 #endif // TOKENIZER_HH

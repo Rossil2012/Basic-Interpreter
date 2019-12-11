@@ -38,10 +38,15 @@ public slots:
 
 class MainWindow2 : public QMainWindow
 {
+    Q_OBJECT
 private:
     Console View;
+    Program PG;
+    Tokenizer TK;
 public:
     MainWindow2(QWidget *parent = nullptr);
+private slots:
+    void parseCode(const QString &str);
 };
 
 #endif // MAINWINDOW_HH

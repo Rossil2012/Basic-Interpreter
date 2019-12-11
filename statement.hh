@@ -16,6 +16,9 @@ signals:
     void sig_changeCursor(int line, bool &lineExist);
     void sig_moveOn();
     void sig_terminate();
+
+    void sig_input(QString &in);
+    void sig_print(const QString &out);
 };
 
 class Remstmt : public Statement

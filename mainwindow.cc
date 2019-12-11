@@ -76,5 +76,31 @@ void MainWindow::parseCode(const QString &code)
     }
 }
 
+MainWindow2::MainWindow2(QWidget *parent)
+    : QMainWindow(parent), View(this), TK(&PG)
+{
+    connect(&View, &Console::newLineWritten, this, &MainWindow2::parseCode);
+    connect(&PG, &Program::changeState, &View, &Console::changeState);
+    connect(&PG, &Program::input, &View, &Console::input);
+    connect(&PG, &Program::print, &View, &Console::write);
+    setCentralWidget(&View);
+    layout()->setMargin(0);
+}
+
+void MainWindow2::parseCode(const QString &str)
+{
+    bool isLegal = true;
+    try
+    {
+        TK.parse(str);
+    }
+    catch (const char *err_str)
+    {
+        View.write(err_str);
+        isLegal = false;
+    }
+}
+
+
 
 

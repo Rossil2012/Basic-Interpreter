@@ -14,14 +14,7 @@ Program::~Program()
 
 void Program::run()
 {
-    try
-    {
-        execute();
-    }
-    catch (const char *error_str)
-    {
-        qDebug() << error_str;
-    }
+    execute();
 }
 
 void Program::clear()
@@ -51,6 +44,7 @@ void Program::printCode()
 
 void Program::execute()
 {
+    emit changeState(1);
     ite_Cursor = Statements.begin();
     Cursor = ite_Cursor.key();
     while (!terminateFlag)

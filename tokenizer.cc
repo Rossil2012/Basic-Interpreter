@@ -21,8 +21,8 @@ Expression *makeEXP(const std::string &str, expType type)
     }
 }
 
-Tokenizer::Tokenizer(Program *parent)
-    : Parent(parent)
+Tokenizer::Tokenizer(Program *pg)
+    : PG(pg)
 {}
 
 void Tokenizer::safe_parse(const QString &str)
@@ -57,7 +57,7 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            Parent->run();
+            PG->run();
             return;
         }
         else
@@ -69,7 +69,7 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            Parent->clear();
+            PG->clear();
             return;
         }
         else
@@ -155,6 +155,7 @@ void Tokenizer::parse(const QString &str)
         if (mexp->check())
         {
             tmp = new Printstmt(mexp);
+            connect(tmp, &Statement::sig_print, PG, &Program::print, Qt::DirectConnection);
         }
         else
         {
@@ -178,6 +179,7 @@ void Tokenizer::parse(const QString &str)
         }
 
         tmp = new Inputstmt(QString::fromStdString(var));
+        connect(tmp, &Statement::sig_input, PG, &Program::input, Qt::DirectConnection);
     }
 
     else if (token == "GOTO")
@@ -294,13 +296,13 @@ void Tokenizer::parse(const QString &str)
 
     if (tmp)
     {
-        QObject::connect(tmp, &Statement::sig_getVar, Parent, &Program::getVar, Qt::DirectConnection);
-        QObject::connect(tmp, &Statement::sig_letVar, Parent, &Program::letVar, Qt::DirectConnection);
-        QObject::connect(tmp, &Statement::sig_changeCursor, Parent, &Program::changeCursor, Qt::DirectConnection);
-        QObject::connect(tmp, &Statement::sig_moveOn, Parent, &Program::moveOn, Qt::DirectConnection);
-        QObject::connect(tmp, &Statement::sig_terminate, Parent, &Program::terminate, Qt::DirectConnection);
-        Parent->addStmt(line, tmp);
-        Parent->addCode(line, str);
+        QObject::connect(tmp, &Statement::sig_getVar, PG, &Program::getVar, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_letVar, PG, &Program::letVar, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_changeCursor, PG, &Program::changeCursor, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_moveOn, PG, &Program::moveOn, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_terminate, PG, &Program::terminate, Qt::DirectConnection);
+        PG->addStmt(line, tmp);
+        PG->addCode(line, str);
     }
 }
 

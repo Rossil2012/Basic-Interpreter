@@ -58,9 +58,7 @@ void Printstmt::execute()
 {
     int toPrint = Exp->eval();
 
-    //to be revised
-    qDebug() << toPrint;
-
+    emit sig_print(QString::number(toPrint));
     emit sig_moveOn();
 }
 
@@ -80,7 +78,17 @@ Inputstmt::~Inputstmt()
 void Inputstmt::execute()
 {
     int value;
+    QString num;
+
     //input >> value
+    emit sig_input(num);
+    bool isInt = false;
+    value = num.toInt(&isInt);
+    if (!isInt)
+    {
+        throw "INVALID NUMBER";
+    }
+
     emit sig_letVar(Var, value);
     emit sig_moveOn();
 }
