@@ -105,10 +105,34 @@ public:
 
 };
 
+class expTree
+{
+    struct node
+    {
+        enum {OPT, NUM} Type;
+        node *Left = nullptr;
+        node *Right = nullptr;
+        union
+        {
+            int num;
+            char opt;
+        } Value;
+    };
+private:
+    node *root;
+    int Eval(node *N);
+    void makeTree(node *N, Stack *s);
+public:
+    expTree(Stack s);
+    ~expTree();
+    int eval();
+};
+
 class CompoundExp : public Expression
 {
 private:
     Stack EXP;
+    expTree *Tree;
     bool isValid;
 public:
     CompoundExp(const QString &cexp);

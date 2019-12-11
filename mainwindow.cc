@@ -85,6 +85,8 @@ MainWindow2::MainWindow2(QWidget *parent)
     connect(&PG, &Program::print, &View, &Console::write);
     setCentralWidget(&View);
     layout()->setMargin(0);
+
+    setFixedSize(600, 600);
 }
 
 void MainWindow2::parseCode(const QString &str)

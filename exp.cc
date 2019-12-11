@@ -381,6 +381,129 @@ bool IdentifierExp::check()
     return isValid;
 }
 
+
+expTree::expTree(Stack s)
+{
+    root = new node;
+    if (s.getPOPtype() == Stack::elem::NUM)
+    {
+        if (s.Length() != 1)
+        {
+            throw "INVALID EXPRESSION TREE";
+        }
+        root->Type = node::NUM;
+        root->Value.num = s.pop<int>();
+    }
+    else if (s.getPOPtype() == Stack::elem::NUM)
+    {
+        root = new node;
+        root->Type = node::OPT;
+        root->Value.opt = s.pop<char>();
+        makeTree(root, &s);
+    }
+}
+
+expTree::~expTree()
+{
+
+}
+
+int expTree::Eval(node *N)
+{
+    if (!N->Left && !N->Right)
+    {
+        if (N->Type == node::OPT)
+        {
+            throw "INVALID EXPRESSION TREE";
+        }
+        return N->Value.num;
+    }
+    else if (N->Left && N->Right)
+    {
+        if (N->Type == node::NUM)
+        {
+            throw "INVALID EXPRESSION TREE";
+        }
+        switch (N->Value.opt)
+        {
+            case '+' :
+            {
+                return Eval(N->Left) + Eval(N->Right);
+            }
+            case '-' :
+            {
+                return Eval(N->Left) - Eval(N->Right);
+            }
+            case '*' :
+            {
+                return Eval(N->Left) * Eval(N->Right);
+            }
+            case '/' :
+            {
+                return Eval(N->Left) / Eval(N->Right);
+            }
+            default:
+            {
+                throw "INVALID EXPRESSION TREE";
+            }
+        }
+    }
+    else
+    {
+        throw "INVALID EXPRESSION TREE";
+    }
+
+}
+
+void expTree::makeTree(node *N, Stack *s)
+{
+    if (N->Type == node::NUM)
+    {
+        return;
+    }
+
+    else if (N->Type == node::OPT)
+    {
+        if (s->Length() < 2)
+        {
+            throw "INVALID EXPRESSION TREE";
+        }
+        N->Left = new node;
+        N->Right = new node;
+        if (s->getPOPtype() == node::NUM)
+        {
+            N->Left->Type = node::NUM;
+            N->Left->Value.num = s->pop<int>();
+        }
+        else if (s->getPOPtype() == node::OPT)
+        {
+            N->Left->Type = node::OPT;
+            N->Left->Value.opt = s->pop<char>();
+            makeTree(N->Left, s);
+        }
+        if (s->getPOPtype() == node::NUM)
+        {
+            N->Right->Type = node::NUM;
+            N->Right->Value.num = s->pop<int>();
+        }
+        else if (s->getPOPtype() == node::OPT)
+        {
+            N->Right->Type = node::OPT;
+            N->Right->Value.opt = s->pop<char>();
+            makeTree(N->Right, s);
+        }
+    }
+}
+
+int expTree::eval()
+{
+    if (!root)
+    {
+        throw "EMPTY TREE";
+    }
+    return Eval(root);
+}
+
 CompoundExp::CompoundExp(const QString &cexp)
     : isValid(false)
 {
@@ -550,7 +673,15 @@ CompoundExp::CompoundExp(const QString &cexp)
         }
     }
 
-    EXP = exp;
+    try
+    {
+        Tree = new expTree(exp);
+    }
+    catch (const char *)
+    {
+        isValid = false;
+        return;
+    }
 
     /*
     //to be revised
@@ -563,6 +694,7 @@ CompoundExp::CompoundExp(const QString &cexp)
     }
     */
 
+    /*
     Stack target;
     int count = 0;
     char topt;
@@ -637,6 +769,7 @@ CompoundExp::CompoundExp(const QString &cexp)
     {
         isValid = true;
     }
+    */
 
 }
 
@@ -650,6 +783,9 @@ int CompoundExp::eval()
         throw "invalid EXPRESSION";
     }
 
+    return Tree->eval();
+
+    /*
     Stack target;
     int count = 0;
     int tmp[2] ={0};
@@ -771,6 +907,7 @@ int CompoundExp::eval()
         //should never be reached
         throw "never reach in compound exp";
     }
+    */
 }
 
 bool CompoundExp::check()
