@@ -99,6 +99,7 @@ void MainWindow2::parseCode(const QString &str)
     catch (const char *err_str)
     {
         View.write(err_str);
+        View.write("\n");
         isLegal = false;
     }
 }

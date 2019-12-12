@@ -105,31 +105,33 @@ public:
 
 };
 
-class expTree
+class expTree : public QObject
 {
+    Q_OBJECT
     struct node
     {
-        enum {OPT, NUM} Type;
+        enum {OPT, NUM, VAR} Type;
         node *Left = nullptr;
         node *Right = nullptr;
-        union
-        {
-            int num;
-            char opt;
-        } Value;
+        int num = -1;
+        char opt = -1;
+        QString var;
     };
 private:
     node *root;
     int Eval(node *N);
     void makeTree(node *N, Stack *s);
 public:
-    expTree(Stack s);
+    expTree(Stack &s);
     ~expTree();
     int eval();
+signals:
+    void sig_getVar(const QString &var, int &value, bool &varExist);
 };
 
 class CompoundExp : public Expression
 {
+    Q_OBJECT
 private:
     Stack EXP;
     expTree *Tree;
@@ -139,6 +141,8 @@ public:
     virtual ~CompoundExp() override;
     virtual int eval() override;
     virtual bool check() override;
+public slots:
+    void getVar(const QString &var, int &value, bool &varExist);
 };
 
 

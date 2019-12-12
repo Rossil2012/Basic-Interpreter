@@ -382,7 +382,7 @@ bool IdentifierExp::check()
 }
 
 
-expTree::expTree(Stack s)
+expTree::expTree(Stack &s)
 {
     root = new node;
     if (s.getPOPtype() == Stack::elem::NUM)
@@ -392,13 +392,21 @@ expTree::expTree(Stack s)
             throw "INVALID EXPRESSION TREE";
         }
         root->Type = node::NUM;
-        root->Value.num = s.pop<int>();
+        root->num = s.pop<int>();
     }
-    else if (s.getPOPtype() == Stack::elem::NUM)
+    else if (s.getPOPtype() == Stack::elem::VAR)
     {
-        root = new node;
+        if (s.Length() != 1)
+        {
+            throw "INVALID EXPRESSION TREE";
+        }
+        root->Type = node::VAR;
+        root->var = s.pop<QString>();
+    }
+    else if (s.getPOPtype() == Stack::elem::OPT)
+    {
         root->Type = node::OPT;
-        root->Value.opt = s.pop<char>();
+        root->opt = s.pop<char>();
         makeTree(root, &s);
     }
 }
@@ -416,15 +424,29 @@ int expTree::Eval(node *N)
         {
             throw "INVALID EXPRESSION TREE";
         }
-        return N->Value.num;
+        else if (N->Type == node::NUM)
+        {
+            return N->num;
+        }
+        else if (N->Type == node::VAR)
+        {
+            bool varExist = false;
+            int value;
+            emit sig_getVar(N->var, value, varExist);
+            if (!varExist)
+            {
+                throw "VARIABLE DO NOT EXIST";
+            }
+            return value;
+        }
     }
     else if (N->Left && N->Right)
     {
-        if (N->Type == node::NUM)
+        if (N->Type == node::NUM || N->Type == node::VAR)
         {
             throw "INVALID EXPRESSION TREE";
         }
-        switch (N->Value.opt)
+        switch (N->opt)
         {
             case '+' :
             {
@@ -457,7 +479,7 @@ int expTree::Eval(node *N)
 
 void expTree::makeTree(node *N, Stack *s)
 {
-    if (N->Type == node::NUM)
+    if (N->Type == node::NUM || N->Type == node::VAR)
     {
         return;
     }
@@ -470,28 +492,39 @@ void expTree::makeTree(node *N, Stack *s)
         }
         N->Left = new node;
         N->Right = new node;
-        if (s->getPOPtype() == node::NUM)
-        {
-            N->Left->Type = node::NUM;
-            N->Left->Value.num = s->pop<int>();
-        }
-        else if (s->getPOPtype() == node::OPT)
-        {
-            N->Left->Type = node::OPT;
-            N->Left->Value.opt = s->pop<char>();
-            makeTree(N->Left, s);
-        }
-        if (s->getPOPtype() == node::NUM)
+        if (s->getPOPtype() == Stack::elem::NUM)
         {
             N->Right->Type = node::NUM;
-            N->Right->Value.num = s->pop<int>();
+            N->Right->num = s->pop<int>();
         }
-        else if (s->getPOPtype() == node::OPT)
+        else if (s->getPOPtype() == Stack::elem::VAR)
+        {
+            N->Right->Type = node::VAR;
+            N->Right->var = s->pop<QString>();
+        }
+        else if (s->getPOPtype() == Stack::elem::OPT)
         {
             N->Right->Type = node::OPT;
-            N->Right->Value.opt = s->pop<char>();
+            N->Right->opt = s->pop<char>();
             makeTree(N->Right, s);
         }
+        if (s->getPOPtype() == Stack::elem::NUM)
+        {
+            N->Left->Type = node::NUM;
+            N->Left->num = s->pop<int>();
+        }
+        else if (s->getPOPtype() == Stack::elem::VAR)
+        {
+            N->Left->Type = node::VAR;
+            N->Left->var = s->pop<QString>();
+        }
+        else if (s->getPOPtype() == Stack::elem::OPT)
+        {
+            N->Left->Type = node::OPT;
+            N->Left->opt = s->pop<char>();
+            makeTree(N->Left, s);
+        }
+
     }
 }
 
@@ -676,12 +709,15 @@ CompoundExp::CompoundExp(const QString &cexp)
     try
     {
         Tree = new expTree(exp);
+        connect(Tree, &expTree::sig_getVar, this, &CompoundExp::getVar);
     }
     catch (const char *)
     {
         isValid = false;
         return;
     }
+
+    isValid = true;
 
     /*
     //to be revised
@@ -913,4 +949,9 @@ int CompoundExp::eval()
 bool CompoundExp::check()
 {
     return isValid;
+}
+
+void CompoundExp::getVar(const QString &var, int &value, bool &varExist)
+{
+    emit sig_getVar(var, value, varExist);
 }

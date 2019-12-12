@@ -11,7 +11,10 @@ Console::Console(QWidget *parent)
 
 void Console::write(QString msg)
 {
-    this->append(msg);
+    //this->append(msg);
+    QTextCursor cursor = this->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    cursor.insertText(msg);
 }
 
 void Console::keyPressEvent(QKeyEvent *event)
@@ -30,6 +33,8 @@ void Console::keyPressEvent(QKeyEvent *event)
         cursor.movePosition(QTextCursor::End);
         cursor.select(QTextCursor::LineUnderCursor);
         QString lastLine = cursor.selectedText();
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertText("\n");
         if (State == CODING)
         {
             emit newLineWritten(lastLine);
@@ -39,6 +44,7 @@ void Console::keyPressEvent(QKeyEvent *event)
             inLine = lastLine;
             emit newInput();
         }
+        return;
     }
     QTextEdit::keyPressEvent(event);
 }

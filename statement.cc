@@ -58,7 +58,7 @@ void Printstmt::execute()
 {
     int toPrint = Exp->eval();
 
-    emit sig_print(QString::number(toPrint));
+    emit sig_print(QString::number(toPrint) + '\n');
     emit sig_moveOn();
 }
 
@@ -80,6 +80,7 @@ void Inputstmt::execute()
     int value;
     QString num;
 
+    emit sig_print("?");
     //input >> value
     emit sig_input(num);
     bool isInt = false;
@@ -106,6 +107,7 @@ void Gotostmt::execute()
     emit sig_changeCursor(Line, lineExist);
     if (!lineExist)
     {
+        emit sig_terminate();
         throw "THE LINE DO NOT EXIST";
     }
 }
@@ -167,8 +169,13 @@ void Ifstmt::execute()
         emit sig_changeCursor(Line, lineExist);
         if (!lineExist)
         {
+            emit sig_terminate();
             throw "THE LINE DO NOT EXIST";
         }
+    }
+    else
+    {
+        emit sig_moveOn();
     }
 
 }
