@@ -1,8 +1,5 @@
 #include "tokenizer.hh"
 
-const char* Keyword[] = {"REM", "LET", "PRINT", "INPUT", "GOTO", "IF", "END"};
-
-
 enum expType{CONST, IDF, COMP};
 
 Expression *makeEXP(const std::string &str, expType type)
@@ -25,24 +22,12 @@ Tokenizer::Tokenizer(Program *pg)
     : PG(pg)
 {}
 
-void Tokenizer::safe_parse(const QString &str)
-{
-    try
-    {
-        parse(str);
-    }
-    catch (const char *error_str)
-    {
-        qDebug() << error_str;
-    }
-}
-
 void Tokenizer::parse(const QString &str)
 {
     std::stringstream ss(str.toStdString());
     if (str.simplified() == "")
     {
-        throw "EMPTY CODE";
+        throw QString("SYNTAX ERROR: EMPTY CODE");
     }
 
     int line = -100;
@@ -81,29 +66,34 @@ void Tokenizer::parse(const QString &str)
         {
             if (ss.eof())
             {
-                // ??????????????
+                QString help;
+                help.append("This is a very simple basic interpreter.\n");
+                help.append("So I don't think you need a help documentation.\n");
+                help.append("LOLOLOL\n");
+                emit print(help);
+                return;
             }
         }
         else if (ctr_token == "QUIT")
         {
             if (ss.eof())
             {
-                //????????????????????
+                emit exit_interpreter();
             }
         }
         else
         {
-            throw "BAD CODE";
+            throw QString("SYNTAX ERROR: BAD CODE");
         }
     }
 
     if (ss.eof())
     {
-        throw "LACK OF STATEMENT";
+        throw QString("SYNTAX ERROR: LACK OF STATEMENT");
     }
     else if (line < 0)
     {
-        throw "INVALID LINE";
+        throw QString("SYNTAX ERROR: NEGATIVE LINE");
     }
 
     std::string token;
@@ -116,7 +106,7 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            throw "EMPTY REMARK";
+            throw QString("SYNTAX ERROR: EMPTY REMARK");
         }
 
         std::string remark;
@@ -127,7 +117,7 @@ void Tokenizer::parse(const QString &str)
         }
         if (!ss.eof())
         {
-            throw "WRONG REM FORMAT";
+            throw QString("SYNTAX ERROR: WRONG REM FORMAT");
         }
         tmp = new Remstmt(QString::fromStdString(remark));
     }
@@ -136,7 +126,7 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            throw "LACK OF VARIABLE";
+            throw QString("SYNTAX ERROR: LACK OF VARIABLE");
         }
         std::string var;
         ss >> var;
@@ -144,11 +134,11 @@ void Tokenizer::parse(const QString &str)
         ss >> equal;
         if (equal != "=")
         {
-            throw "NO EQUAL SIGN";
+            throw QString("SYNTAX ERROR: NO EQUAL SIGN");
         }
         if (ss.eof())
         {
-            throw "LACK OF EXPRESSION";
+            throw QString("SYNTAX ERROR: LACK OF EXPRESSION");
         }
         std::string exp;
         //
@@ -161,7 +151,7 @@ void Tokenizer::parse(const QString &str)
         }
         else
         {
-            throw  "INVALID EXPRESSION";
+            throw  QString("SYNTAX ERROR: INVALID EXPRESSION");
         }
     }
 
@@ -169,7 +159,7 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            throw "NO EXPRESSION";
+            throw QString("SYNTAX ERROR: NO EXPRESSION");
         }
 
         std::string exp;
@@ -177,7 +167,7 @@ void Tokenizer::parse(const QString &str)
         getline(ss, exp, '\0');
         if (!ss.eof())
         {
-            throw "WRONG PRINT FORMAT";
+            throw QString("SYNTAX ERROR: WRONG PRINT FORMAT");
         }
 
         Expression *mexp = makeEXP(exp, COMP);
@@ -187,7 +177,7 @@ void Tokenizer::parse(const QString &str)
         }
         else
         {
-            throw  "INVALID EXPRESSION";
+            throw  QString("SYNTAX ERROR: INVALID EXPRESSION");
         }
     }
 
@@ -195,20 +185,20 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            throw "NO VARIABLE";
+            throw QString("SYNTAX ERROR: NO VARIABLE");
         }
 
         std::string var;
         ss >> var;
         if (!ss.eof())
         {
-            throw "WRONG INPUT FORMAT";
+            throw QString("SYNTAX ERROR: WRONG INPUT FORMAT");
         }
 
         Expression *mvar = makeEXP(var, IDF);
         if (!mvar->check())
         {
-            throw "INVALID VARIABLE NAME";
+            throw QString("SYNTAX ERROR: INVALID VARIABLE NAME");
         }
 
         tmp = new Inputstmt(QString::fromStdString(var));
@@ -219,14 +209,14 @@ void Tokenizer::parse(const QString &str)
     {
         if (ss.eof())
         {
-            throw "NO LINE";
+            throw QString("SYNTAX ERROR: NO LINE");
         }
 
         int line;
         ss >> line;
         if (!ss.eof())
         {
-            throw "WRONG LINE NUMBER";
+            throw QString("SYNTAX ERROR: WRONG LINE NUMBER");
         }
 
         tmp = new Gotostmt(line);
@@ -240,7 +230,7 @@ void Tokenizer::parse(const QString &str)
 
         if (ss.eof())
         {
-            throw "LACK OF EXPRESSION 1";
+            throw QString("SYNTAX ERROR: LACK OF EXPRESSION 1");
         }
 
         while (!ss.eof())
@@ -254,23 +244,23 @@ void Tokenizer::parse(const QString &str)
         }
         if (exp1.empty())
         {
-            throw "LACK OF EXPRESSION 1";
+            throw QString("SYNTAX ERROR: LACK OF EXPRESSION 1");
         }
         else if (stmp == ">" || stmp == "<" || stmp == "=")
         {
             if (ss.eof())
             {
-                throw "LACK OF EXPRESSION 2";
+                throw QString("SYNTAX ERROR: LACK OF EXPRESSION 2");
             }
             opt = stmp.at(0);
         }
         else if (ss.eof())
         {
-            throw "LACK OF OPT";
+            throw QString("SYNTAX ERROR: LACK OF OPT");
         }
         else
         {
-            throw "INVALID OPERATOR";
+            throw QString("SYNTAX ERROR: INVALID OPERATOR");
         }
 
         while (!ss.eof())
@@ -284,34 +274,34 @@ void Tokenizer::parse(const QString &str)
         }
         if (exp2.empty())
         {
-            throw "LACK OF EXPRESSION 2";
+            throw QString("SYNTAX ERROR: LACK OF EXPRESSION 2");
         }
         else if (stmp == "THEN")
         {
             if (ss.eof())
             {
-                throw "LACK OF LINE NUM";
+                throw QString("SYNTAX ERROR: LACK OF LINE NUM");
             }
         }
         else //ss.eof()
         {
-            throw "LACK OF \"THEN\"";
+            throw QString("SYNTAX ERROR: LACK OF \"THEN\"");
         }
 
         ss >> line;
         if (!ss.eof())
         {
-            throw "INVALID LINE NUMBER";
+            throw QString("SYNTAX ERROR: INVALID LINE NUMBER");
         }
 
         Expression *mexp1 = makeEXP(exp1, COMP), *mexp2 = makeEXP(exp2, COMP);
         if (!mexp1->check())
         {
-            throw "INVALID EXPRESSION 1";
+            throw QString("SYNTAX ERROR: INVALID EXPRESSION 1");
         }
         if (!mexp2->check())
         {
-            throw "INVALID EXPRESSION 2";
+            throw QString("SYNTAX ERROR: INVALID EXPRESSION 2");
         }
 
         tmp = new Ifstmt(mexp1, opt, mexp2, line);
@@ -324,12 +314,12 @@ void Tokenizer::parse(const QString &str)
 
     else
     {
-        throw "WRONG TOKEN";
+        throw QString("SYNTAX ERROR: WRONG TOKEN");
     }
 
     if (!ss.eof())
     {
-        throw "EXCESSIVE STATEMENT";
+        throw QString("SYNTAX ERROR: EXCESSIVE STATEMENT");
     }
 
     if (tmp)

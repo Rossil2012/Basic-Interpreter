@@ -1,7 +1,7 @@
 #ifndef EXP_HH
 #define EXP_HH
 
-#include <QDebug>
+#include <QObject>
 #include <QString>
 #include <string>
 #include <sstream>
@@ -50,8 +50,6 @@ public:
     template <class out> out pop();
     template <class out> out rpop();
     template <class in> void push(const in &elem);
-
-    void print();
 };
 
 class Expression : public QObject

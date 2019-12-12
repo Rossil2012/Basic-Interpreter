@@ -157,7 +157,7 @@ int Stack::showPOP<int>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     return pop_p->Num;
 }
@@ -167,7 +167,7 @@ QString Stack::showPOP<QString>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     return pop_p->Var;
 }
@@ -177,7 +177,7 @@ char Stack::showPOP<char>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     return pop_p->Opt;
 }
@@ -187,7 +187,7 @@ int Stack::pop<int>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = pop_p;
     int TMP = tmp->Num;
@@ -202,7 +202,7 @@ QString Stack::pop<QString>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = pop_p;
     QString TMP = tmp->Var;
@@ -217,7 +217,7 @@ char Stack::pop<char>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = pop_p;
     char TMP = tmp->Opt;
@@ -232,7 +232,7 @@ int Stack::rpop<int>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = end;
     int TMP = tmp->Num;
@@ -247,7 +247,7 @@ QString Stack::rpop<QString>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = end;
     QString TMP = tmp->Var;
@@ -262,7 +262,7 @@ char Stack::rpop<char>()
 {
     if (isEmpty())
     {
-        throw "NO ELEMENT";
+        throw QString("NO ELEMENT");
     }
     elem *tmp = end;
     char TMP = tmp->Opt;
@@ -288,23 +288,6 @@ void Stack::push(const in &elem)
         ++length;
     }
 }
-
-void Stack::print()
-{
-    elem *tmp = end;
-    while (tmp)
-    {
-        if (tmp->Type == elem::type::NUM)
-            qDebug() << tmp->Num << ' ';
-        else if (tmp->Type == elem::type::VAR)
-            qDebug() << tmp->Var << ' ';
-        else
-            qDebug() << tmp->Opt << ' ';
-        tmp = tmp->Prev;
-    }
-    qDebug() << endl;
-}
-
 
 Expression::~Expression()
 {}
@@ -335,7 +318,7 @@ int ConstantExp::eval()
 {
     if (!isValid)
     {
-        throw "invalid EXPRESSION";
+        throw QString("invalid EXPRESSION");
     }
     return Num;
 }
@@ -363,7 +346,7 @@ int IdentifierExp::eval()
 {
     if (!isValid)
     {
-        throw "invalid EXPRESSION";
+        throw QString("invalid EXPRESSION");
     }
 
     int value;
@@ -371,7 +354,7 @@ int IdentifierExp::eval()
     emit sig_getVar(Var, value, varExist);
     if (!varExist)
     {
-        throw "VARIABLE DO NOT EXIST";
+        throw QString("VARIABLE DO NOT EXIST");
     }
     return value;
 }
@@ -389,7 +372,7 @@ expTree::expTree(Stack &s)
     {
         if (s.Length() != 1)
         {
-            throw "INVALID EXPRESSION TREE";
+            throw QString("INVALID EXPRESSION TREE");
         }
         root->Type = node::NUM;
         root->num = s.pop<int>();
@@ -398,7 +381,7 @@ expTree::expTree(Stack &s)
     {
         if (s.Length() != 1)
         {
-            throw "INVALID EXPRESSION TREE";
+            throw QString("INVALID EXPRESSION TREE");
         }
         root->Type = node::VAR;
         root->var = s.pop<QString>();
@@ -422,7 +405,7 @@ int expTree::Eval(node *N)
     {
         if (N->Type == node::OPT)
         {
-            throw "INVALID EXPRESSION TREE";
+            throw QString("INVALID EXPRESSION TREE");
         }
         else if (N->Type == node::NUM)
         {
@@ -435,7 +418,7 @@ int expTree::Eval(node *N)
             emit sig_getVar(N->var, value, varExist);
             if (!varExist)
             {
-                throw "VARIABLE DO NOT EXIST";
+                throw QString("VARIABLE DO NOT EXIST");
             }
             return value;
         }
@@ -444,7 +427,7 @@ int expTree::Eval(node *N)
     {
         if (N->Type == node::NUM || N->Type == node::VAR)
         {
-            throw "INVALID EXPRESSION TREE";
+            throw QString("INVALID EXPRESSION TREE");
         }
         switch (N->opt)
         {
@@ -466,13 +449,13 @@ int expTree::Eval(node *N)
             }
             default:
             {
-                throw "INVALID EXPRESSION TREE";
+                throw QString("INVALID EXPRESSION TREE");
             }
         }
     }
     else
     {
-        throw "INVALID EXPRESSION TREE";
+        throw QString("INVALID EXPRESSION TREE");
     }
 
 }
@@ -488,7 +471,7 @@ void expTree::makeTree(node *N, Stack *s)
     {
         if (s->Length() < 2)
         {
-            throw "INVALID EXPRESSION TREE";
+            throw QString("INVALID EXPRESSION TREE");
         }
         N->Left = new node;
         N->Right = new node;
@@ -532,7 +515,7 @@ int expTree::eval()
 {
     if (!root)
     {
-        throw "EMPTY TREE";
+        throw QString("EMPTY TREE");
     }
     return Eval(root);
 }
@@ -570,7 +553,6 @@ CompoundExp::CompoundExp(const QString &cexp)
         {
             if (tmp.length() != 1)
             {
-                //throw "WRONG OPT";
                 return;
             }
             o = ctmp;
@@ -668,7 +650,7 @@ CompoundExp::CompoundExp(const QString &cexp)
                         isValid = false;
                         return;
                     }
-                    else //opt.showPOP<char>() == '('
+                    else
                     {
                         opt.pop<char>();
                     }
@@ -677,7 +659,6 @@ CompoundExp::CompoundExp(const QString &cexp)
                 }
                 default:
                 {
-                    //throw "invalid OPERATOR";
                     isValid = false;
                     return;
                 }
@@ -718,95 +699,6 @@ CompoundExp::CompoundExp(const QString &cexp)
     }
 
     isValid = true;
-
-    /*
-    //to be revised
-
-    int numCount = 0, varCount = 0, optCount = 0;
-    exp.stat(numCount, varCount, optCount);
-    if (numCount + varCount == optCount + 1)
-    {
-        isValid = true;
-    }
-    */
-
-    /*
-    Stack target;
-    int count = 0;
-    char topt;
-    while (!exp.isEmpty())
-    {
-        if (count >= 2)
-        {
-            if (exp.getrPOPtype() == Stack::elem::type::OPT)
-            {
-                topt = exp.rpop<char>();
-                if (!(topt == '+' || topt == '-' || topt == '*' || topt == '/'))
-                {
-                    //should never be reached
-                    //throw "Unvalid Operator!";
-                    throw "never reach in compound exp";
-                }
-                for (int i = 0; i < 2; ++i)
-                {
-                    if (target.getrPOPtype() == Stack::elem::type::NUM)
-                    {
-                        target.pop<int>();
-                    }
-                    else if (target.getrPOPtype() == Stack::elem::type::VAR)
-                    {
-                        target.pop<QString>();
-                    }
-                    --count;
-                }
-                target.push<int>(0);
-                ++count;
-            }
-            else if (exp.getrPOPtype() == Stack::elem::type::NUM)
-            {
-                exp.rpop<int>();
-                target.push<int>(0);
-                ++count;
-            }
-            else if (exp.getrPOPtype() == Stack::elem::type::VAR)
-            {
-                exp.rpop<QString>();
-                target.push<int>(0);
-                ++count;
-            }
-        }
-        else
-        {
-            if (exp.getrPOPtype() == Stack::elem::type::OPT)
-            {
-                isValid = false;
-                return;
-            }
-            else if (exp.getrPOPtype() == Stack::elem::type::NUM)
-            {
-                target.push<int>(exp.rpop<int>());
-                ++count;
-            }
-            else if (exp.getrPOPtype() == Stack::elem::type::VAR)
-            {
-                exp.rpop<QString>();
-                target.push<int>(0);
-                ++count;
-            }
-        }
-    }
-
-    if (target.Length() != 1)
-    {
-        isValid = false;
-        return;
-    }
-    else
-    {
-        isValid = true;
-    }
-    */
-
 }
 
 CompoundExp::~CompoundExp()
@@ -816,134 +708,10 @@ int CompoundExp::eval()
 {
     if (!isValid)
     {
-        throw "invalid EXPRESSION";
+        throw QString("invalid EXPRESSION");
     }
 
     return Tree->eval();
-
-    /*
-    Stack target;
-    int count = 0;
-    int tmp[2] ={0};
-    char topt;
-    while (!EXP.isEmpty())
-    {
-        if (count >= 2)
-        {
-            if (EXP.getrPOPtype() == Stack::elem::type::OPT)
-            {
-                topt = EXP.rpop<char>();
-                for (int i = 0; i < 2; ++i)
-                {
-                        tmp[i] = target.pop<int>();
-                        --count;
-                }
-                switch(topt)
-                {
-                    case '+':
-                    {
-                        target.push<int>(tmp[0] + tmp[1]);
-                        ++count;
-                        break;
-                    }
-                    case '-':
-                    {
-                        target.push<int>(tmp[0] - tmp[1]);
-                        ++count;
-                        break;
-                    }
-                    case '*':
-                    {
-                        target.push<int>(tmp[0] * tmp[1]);
-                        ++count;
-                        break;
-                    }
-                    case '/':
-                    {
-                        if (tmp[1] == 0)
-                        {
-                            throw "Divided by Zero!";
-                        }
-                        target.push<int>(tmp[1] / tmp[0]);
-                        ++count;
-                        break;
-                    }
-                    default:
-                    {
-                        //should never be reached
-                        //throw "Unvalid Operator!";
-                        throw "never reach in compound EXP";
-                    }
-                }
-            }
-            else if (EXP.getrPOPtype() == Stack::elem::type::NUM)
-            {
-                target.push<int>(EXP.rpop<int>());
-                ++count;
-            }
-            else if (EXP.getrPOPtype() == Stack::elem::type::VAR)
-            {
-                QString var = EXP.rpop<QString>();
-                int value;
-                bool varExist;
-                emit sig_getVar(var, value, varExist);
-                if (varExist)
-                {
-                    target.push<int>(value);
-                    ++count;
-                }
-                else
-                {
-                    //to be reconsidered
-                    //isValid = false;
-                    throw "VARIABLE DO NOT EXIST";
-                }
-
-            }
-        }
-        else
-        {
-            if (EXP.getrPOPtype() == Stack::elem::type::OPT)
-            {
-                //should never be reached
-                isValid = false;
-
-            }
-            else if (EXP.getrPOPtype() == Stack::elem::type::NUM)
-            {
-                target.push<int>(EXP.rpop<int>());
-                ++count;
-            }
-            else if (EXP.getrPOPtype() == Stack::elem::type::VAR)
-            {
-                QString var = EXP.rpop<QString>();
-                int value;
-                bool varExist;
-                emit sig_getVar(var, value, varExist);
-                if (varExist)
-                {
-                    target.push<int>(value);
-                    ++count;
-                }
-                else
-                {
-                    //to be reconsidered
-                    //isValid = false;
-                    throw "VARIABLE DO NOT EXIST";
-                }
-            }
-        }
-    }
-    if (target.Length() == 1)
-    {
-        return target.pop<int>();
-    }
-    else
-    {
-        //should never be reached
-        throw "never reach in compound exp";
-    }
-    */
 }
 
 bool CompoundExp::check()

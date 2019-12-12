@@ -28,7 +28,7 @@ void Program::run()
     //Change the state of console to CODING
     if (normal_end)
     {
-        emit print("PROGRAM \n");//////
+        emit print("PROGRAM IS EXECUTED SUCCESSFULLY\n");
     }
 
 }
@@ -70,7 +70,7 @@ void Program::execute()
         if (Statements.isEmpty())
         {
             terminate();
-            throw "RUNTIME ERROR: PROGRAM IS EMPTY";
+            throw QString("RUNTIME ERROR: PROGRAM IS EMPTY");
         }
         ite_Cursor.value()->execute();
     }
@@ -107,7 +107,7 @@ void Program::moveOn()
     if (ite_Cursor == Statements.end())
     {
         terminate();
-        throw "RUNTIME ERROR: NO NEXT STATEMENT";
+        throw QString("RUNTIME ERROR: NO NEXT STATEMENT");
     }
     Cursor = ite_Cursor.key();
 }
@@ -124,5 +124,5 @@ void Program::terminate()
     normal_end = false;
     terminateFlag = true;
     emit changeState(0);
-    emit print("PROGRAM TERMINATE\n");
+    emit print("PROGRAM TERMINATES EXCEPTIONALLY\n");
 }

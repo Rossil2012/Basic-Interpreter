@@ -37,10 +37,10 @@ void Letstmt::execute()
     {
          value = rightValue->eval();
     }
-    catch (const char *err_str)
+    catch (QString err_str)
     {
         emit sig_terminate();
-        throw err_str;
+        throw  "RUNTIME ERROR: " + err_str;
     }
     emit sig_letVar(leftValue, value);
     emit sig_moveOn();
@@ -71,10 +71,10 @@ void Printstmt::execute()
     {
         toPrint = Exp->eval();
     }
-    catch (const char *err_str)
+    catch (QString err_str)
     {
         emit sig_terminate();
-        throw err_str;
+        throw  QString("RUNTIME ERROR: " + err_str);
     }
     emit sig_print(QString::number(toPrint) + '\n');
     emit sig_moveOn();
@@ -105,7 +105,8 @@ void Inputstmt::execute()
     value = num.toInt(&isInt);
     if (!isInt)
     {
-        throw "INVALID NUMBER";
+        emit sig_terminate();
+        throw QString("RUNTIME ERROR: INVALID NUMBER");
     }
 
     emit sig_letVar(Var, value);
@@ -126,7 +127,7 @@ void Gotostmt::execute()
     if (!lineExist)
     {
         emit sig_terminate();
-        throw "THE LINE DO NOT EXIST";
+        throw QString("RUNTIME ERROR: THE LINE DO NOT EXIST");
     }
 }
 
@@ -178,7 +179,7 @@ void Ifstmt::execute()
 
         default:
         {
-            throw "INVALID OPERATOR";
+            throw QString("RUNTIME ERROR: INVALID OPERATOR");
         }
     }
     if (isSatisfied)
@@ -188,7 +189,7 @@ void Ifstmt::execute()
         if (!lineExist)
         {
             emit sig_terminate();
-            throw "THE LINE DO NOT EXIST";
+            throw QString("RUNTIME ERROR: THE LINE DO NOT EXIST");
         }
     }
     else

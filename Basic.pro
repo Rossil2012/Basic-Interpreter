@@ -21,7 +21,6 @@ SOURCES += \
     evalstate.cc \
     exp.cc \
     mainwindow.cc \
-    parser.cc \
     program.cc \
     statement.cc \
     tokenizer.cc
@@ -31,7 +30,6 @@ HEADERS += \
     evalstate.hh \
     exp.hh \
     mainwindow.hh \
-    parser.hh \
     program.hh \
     statement.hh \
     tokenizer.hh

@@ -9,9 +9,8 @@ Console::Console(QWidget *parent)
 }
 
 
-void Console::write(QString msg)
+void Console::write(const QString &msg)
 {
-    //this->append(msg);
     QTextCursor cursor = this->textCursor();
     cursor.movePosition(QTextCursor::End);
     cursor.insertText(msg);
@@ -29,7 +28,6 @@ void Console::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_Return) 
     {
-        qDebug() << "111";
         QTextCursor cursor = this->textCursor();
         cursor.movePosition(QTextCursor::End);
         cursor.select(QTextCursor::LineUnderCursor);
@@ -69,4 +67,9 @@ void Console::changeState(int state)
     {
         State = RUNNING;
     }
+}
+
+void Console::Exit_interpreter()
+{
+    emit exit_interpreter();
 }

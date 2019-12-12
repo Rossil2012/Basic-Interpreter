@@ -6,8 +6,6 @@
 #include <QWidget>
 #include <QEventLoop>
 
-#include <QDebug>
-
 class Console : public QTextEdit
 {
     Q_OBJECT
@@ -21,11 +19,13 @@ public:
 signals:
     void newLineWritten(const QString &newline);
     void newInput();
+    void exit_interpreter();
 
 public slots:
-    void write(QString msg);
+    void write(const QString &msg);
     void input(QString &in);
     void changeState(int state);
+    void Exit_interpreter();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
