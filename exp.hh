@@ -51,21 +51,6 @@ public:
     template <class out> out rpop();
     template <class in> void push(const in &elem);
 
-
-    /*
-    //Instantiation Declaration
-    template<> int showPOP<int>();
-    template<> QString showPOP<QString>();
-    template<> char showPOP<char>();
-    template<> int pop<int>();
-    template<> QString pop<QString>();
-    template<> char pop<char>();
-    template<> int rpop<int>();
-    template<> QString rpop<QString>();
-    template<> char rpop<char>();
-    */
-
-
     void print();
 };
 

@@ -50,31 +50,50 @@ void Tokenizer::parse(const QString &str)
 
     if (!ss.good() && !ss.eof())
     {
-        throw "LACK OF LINE";
-    }
-
-    if (line == 0)
-    {
-        if (ss.eof())
+        ss.clear();
+        std::string ctr_token;
+        ss >> ctr_token;
+        if (ctr_token == "RUN")
         {
-            PG->run();
-            return;
+            if (ss.eof())
+            {
+                PG->run();
+                return;
+            }
+        }
+        else if (ctr_token == "LIST")
+        {
+            if (ss.eof())
+            {
+                PG->printCode();
+                return;
+            }
+        }
+        else if (ctr_token == "CLEAR")
+        {
+            if (ss.eof())
+            {
+                PG->clear();
+                return;
+            }
+        }
+        else if (ctr_token == "HELP")
+        {
+            if (ss.eof())
+            {
+                // ??????????????
+            }
+        }
+        else if (ctr_token == "QUIT")
+        {
+            if (ss.eof())
+            {
+                //????????????????????
+            }
         }
         else
         {
-            throw "WRONG RUN TOKEN";
-        }
-    }
-    else if (line == -1)
-    {
-        if (ss.eof())
-        {
-            PG->clear();
-            return;
-        }
-        else
-        {
-            throw "WRONG CLEAR TOKEN";
+            throw "BAD CODE";
         }
     }
 
@@ -95,6 +114,11 @@ void Tokenizer::parse(const QString &str)
 
     if (token == "REM")
     {
+        if (ss.eof())
+        {
+            throw "EMPTY REMARK";
+        }
+
         std::string remark;
         if (!ss.eof())
         {
@@ -143,6 +167,11 @@ void Tokenizer::parse(const QString &str)
 
     else if (token == "PRINT")
     {
+        if (ss.eof())
+        {
+            throw "NO EXPRESSION";
+        }
+
         std::string exp;
         //
         getline(ss, exp, '\0');
@@ -155,7 +184,6 @@ void Tokenizer::parse(const QString &str)
         if (mexp->check())
         {
             tmp = new Printstmt(mexp);
-            connect(tmp, &Statement::sig_print, PG, &Program::print, Qt::DirectConnection);
         }
         else
         {
@@ -165,6 +193,11 @@ void Tokenizer::parse(const QString &str)
 
     else if (token == "INPUT")
     {
+        if (ss.eof())
+        {
+            throw "NO VARIABLE";
+        }
+
         std::string var;
         ss >> var;
         if (!ss.eof())
@@ -184,6 +217,11 @@ void Tokenizer::parse(const QString &str)
 
     else if (token == "GOTO")
     {
+        if (ss.eof())
+        {
+            throw "NO LINE";
+        }
+
         int line;
         ss >> line;
         if (!ss.eof())
@@ -300,7 +338,9 @@ void Tokenizer::parse(const QString &str)
         QObject::connect(tmp, &Statement::sig_letVar, PG, &Program::letVar, Qt::DirectConnection);
         QObject::connect(tmp, &Statement::sig_changeCursor, PG, &Program::changeCursor, Qt::DirectConnection);
         QObject::connect(tmp, &Statement::sig_moveOn, PG, &Program::moveOn, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_end, PG, &Program::end, Qt::DirectConnection);
         QObject::connect(tmp, &Statement::sig_terminate, PG, &Program::terminate, Qt::DirectConnection);
+        QObject::connect(tmp, &Statement::sig_print, PG, &Program::print, Qt::DirectConnection);
         PG->addStmt(line, tmp);
         PG->addCode(line, str);
     }

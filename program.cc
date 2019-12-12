@@ -1,7 +1,7 @@
 #include "program.hh"
 
 Program::Program()
-    :Cursor(0), terminateFlag(false)
+    :Cursor(0),  normal_end(true), terminateFlag(false)
 {}
 
 Program::~Program()
@@ -14,7 +14,23 @@ Program::~Program()
 
 void Program::run()
 {
+    //Initialization
+    Vars.clear();
+    Cursor = 0;
+    ite_Cursor = Statements.begin();
+    terminateFlag = false;
+
+    //Change the state of console to RUNNING
+    emit changeState(1);
+
     execute();
+
+    //Change the state of console to CODING
+    if (normal_end)
+    {
+        emit print("PROGRAM \n");//////
+    }
+
 }
 
 void Program::clear()
@@ -39,19 +55,22 @@ void Program::addCode(int line, const QString &code)
 
 void Program::printCode()
 {
-
+    for (auto i = Codes.begin(); i != Codes.end(); ++i)
+    {
+        emit print(*i + '\n');
+    }
 }
 
 void Program::execute()
 {
-    emit changeState(1);
     ite_Cursor = Statements.begin();
     Cursor = ite_Cursor.key();
     while (!terminateFlag)
     {
         if (Statements.isEmpty())
         {
-            throw "PROGRAM IS EMPTY";
+            terminate();
+            throw "RUNTIME ERROR: PROGRAM IS EMPTY";
         }
         ite_Cursor.value()->execute();
     }
@@ -87,12 +106,23 @@ void Program::moveOn()
     ++ite_Cursor;
     if (ite_Cursor == Statements.end())
     {
-        throw "NO NEXT STATEMENT";
+        terminate();
+        throw "RUNTIME ERROR: NO NEXT STATEMENT";
     }
     Cursor = ite_Cursor.key();
 }
 
+void Program::end()
+{
+    normal_end = true;
+    terminateFlag = true;
+    emit changeState(0);
+}
+
 void Program::terminate()
 {
+    normal_end = false;
     terminateFlag = true;
+    emit changeState(0);
+    emit print("PROGRAM TERMINATE\n");
 }

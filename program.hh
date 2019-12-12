@@ -14,6 +14,7 @@ private:
     Evalstate Vars;
     int Cursor;
     QMap<int, Statement *>::iterator ite_Cursor;
+    bool normal_end;
     bool terminateFlag;
     void execute();
 
@@ -31,6 +32,7 @@ public slots:
     void getVar(const QString &var, int &value, bool &varExist);
     void changeCursor(int line, bool &lineExist);
     void moveOn();
+    void end();
     void terminate();
 
 signals:

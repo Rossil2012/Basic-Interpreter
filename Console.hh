@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QEventLoop>
 
+#include <QDebug>
+
 class Console : public QTextEdit
 {
     Q_OBJECT

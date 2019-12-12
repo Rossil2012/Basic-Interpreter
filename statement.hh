@@ -15,6 +15,7 @@ signals:
     void sig_getVar(const QString &var, int &value, bool &varExist);
     void sig_changeCursor(int line, bool &lineExist);
     void sig_moveOn();
+    void sig_end();
     void sig_terminate();
 
     void sig_input(QString &in);

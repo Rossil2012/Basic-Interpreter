@@ -32,7 +32,16 @@ Letstmt::~Letstmt()
 
 void Letstmt::execute()
 {
-    int value = rightValue->eval();
+    int value;
+    try
+    {
+         value = rightValue->eval();
+    }
+    catch (const char *err_str)
+    {
+        emit sig_terminate();
+        throw err_str;
+    }
     emit sig_letVar(leftValue, value);
     emit sig_moveOn();
 }
@@ -56,8 +65,17 @@ Printstmt::~Printstmt()
 //
 void Printstmt::execute()
 {
-    int toPrint = Exp->eval();
+    int toPrint;
 
+    try
+    {
+        toPrint = Exp->eval();
+    }
+    catch (const char *err_str)
+    {
+        emit sig_terminate();
+        throw err_str;
+    }
     emit sig_print(QString::number(toPrint) + '\n');
     emit sig_moveOn();
 }
@@ -193,5 +211,5 @@ Endstmt::~Endstmt()
 
 void Endstmt::execute()
 {
-    emit sig_terminate();
+    emit sig_end();
 }
