@@ -32,3 +32,12 @@ void Evalstate::clear()
     Vars.clear();
     varNum = 0;
 }
+
+void Evalstate::printVars()
+{
+    for (auto i = Vars.begin(); i != Vars.end(); ++i)
+    {
+        emit print(i.key() + ": ");
+        emit print(QString::number(i.value()) + "\n");
+    }
+}

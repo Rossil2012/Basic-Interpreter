@@ -24,6 +24,83 @@ Tokenizer::Tokenizer(Program *pg)
 
 void Tokenizer::parse(const QString &str)
 {
+    if (PG->isDebugging())
+    {
+        if (str.simplified() == "")
+        {
+            return;
+        }
+        std::stringstream ss(str.toStdString());
+        std::string token;
+        ss >> token;
+        if (token == "B" || token == "BREAK")
+        {
+            if (ss.eof())
+            {
+                throw QString("NO BREAK LINE");
+            }
+            int line;
+            ss >> line;
+            if (!ss.good() && !ss.eof())
+            {
+                throw QString("INVALID LINE");
+            }
+            if (PG->de_setBp(line) == false)
+            {
+                throw QString("LINE DO NOT EXIST");
+            }
+            return;
+        }
+        else if (token == "D" || token == "DELETE")
+        {
+            if (ss.eof())
+            {
+                throw QString("NO BREAK LINE");
+            }
+            int line;
+            ss >> line;
+            if (!ss.good() && !ss.eof())
+            {
+                throw QString("INVALID LINE");
+            }
+            if (PG->de_delBp(line) == false)
+            {
+                throw QString("LINE DO NOT EXIST");
+            }
+            return;
+        }
+        else if (token == "SB" || token == "SHOWBREAKPOINTS")
+        {
+            PG->de_showBp();
+            return;
+        }
+        else if (token == "S" || token == "STEPI")
+        {
+            PG->de_stepin();
+            return;
+        }
+        else if (token == "C" || token == "CONTINUE")
+        {
+            PG->de_continue();
+            return;
+        }
+        else if (token == "DIS" || token == "DISPLAY")
+        {
+            PG->de_display();
+            return;
+        }
+        else if (token == "STOP")
+        {
+            PG->de_stop();
+            return;
+        }
+        else
+        {
+            throw QString("INVALID DEBUG INSTRUCTION");
+        }
+    }
+
+
     std::stringstream ss(str.toStdString());
     if (str.simplified() == "")
     {
@@ -80,6 +157,14 @@ void Tokenizer::parse(const QString &str)
             {
                 emit exit_interpreter();
             }
+        }
+        else if (ctr_token == "DEBUG")
+        {
+            if (ss.eof())
+            {
+                PG->de_start();
+            }
+            return;
         }
         else
         {

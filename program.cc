@@ -1,8 +1,10 @@
 #include "program.hh"
 
 Program::Program()
-    :Cursor(0),  normal_end(true), terminateFlag(false)
-{}
+    :Cursor(0),  normal_end(true), terminateFlag(false), de_on(false)
+{
+    connect(&Vars, &Evalstate::print, this, &Program::print);
+}
 
 Program::~Program()
 {
@@ -61,6 +63,11 @@ void Program::printCode()
     }
 }
 
+bool Program::isDebugging()
+{
+    return de_on;
+}
+
 void Program::execute()
 {
     ite_Cursor = Statements.begin();
@@ -114,15 +121,113 @@ void Program::moveOn()
 
 void Program::end()
 {
-    normal_end = true;
-    terminateFlag = true;
-    emit changeState(0);
+    if (!de_on)
+    {
+        normal_end = true;
+        terminateFlag = true;
+        emit changeState(0);
+    }
+    else
+    {
+        de_stop();
+    }
 }
 
 void Program::terminate()
 {
-    normal_end = false;
-    terminateFlag = true;
-    emit changeState(0);
-    emit print("PROGRAM TERMINATES EXCEPTIONALLY\n");
+    if (!de_on)
+    {
+        normal_end = false;
+        terminateFlag = true;
+        emit changeState(0);
+        emit print("PROGRAM TERMINATES EXCEPTIONALLY\n");
+    }
+    else
+    {
+        de_stop();
+    }
+}
+
+void Program::de_start()
+{
+    de_on = true;
+    emit print("Debugger mode is on.\n");
+    Vars.clear();
+    Cursor = 0;
+    ite_Cursor = Statements.begin();
+    terminateFlag = false;
+}
+
+void Program::de_stop()
+{
+    de_on = false;
+    Vars.clear();
+    bp.clear();
+    Cursor = 0;
+    ite_Cursor = Statements.begin();
+    terminateFlag = false;
+    normal_end = true;
+    emit print("DEBUG OVER.\n");
+}
+
+bool Program::de_setBp(int line)
+{
+    if (!Statements.contains(line))
+    {
+        return false;
+    }
+    if (!bp.contains(line))
+    {
+        bp.push_back(line);
+    }
+    return true;
+}
+
+bool Program::de_delBp(int line)
+{
+    if (!bp.contains(line))
+    {
+        return false;
+    }
+    bp.remove(bp.indexOf(line));
+    return true;
+}
+void Program::de_showBp()
+{
+    for (auto i = bp.begin(); i != bp.end(); ++i)
+    {
+        emit print(QString::number(*i) + ' ');
+    }
+    emit print("\n");
+}
+void Program::de_stepin()
+{
+    ++ite_Cursor;
+    if (ite_Cursor == Statements.end())
+    {
+        terminate();
+    }
+    Cursor = ite_Cursor.key();
+}
+void Program::de_continue()
+{
+    de_stepin();
+    while (!terminateFlag)
+    {
+        if (bp.contains(Cursor))
+        {
+            emit print("Current line: " + Codes[Cursor] + "\n");
+            break;
+        }
+        if (Statements.isEmpty())
+        {
+            emit print("RUNTIME ERROR: PROGRAM IS EMPTY");
+            de_stop();
+        }
+        ite_Cursor.value()->execute();
+    }
+}
+void Program::de_display()
+{
+    Vars.printVars();
 }

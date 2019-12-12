@@ -20,7 +20,7 @@ Letstmt::Letstmt(const QString &lv, Expression *rv)
 {
     if (!chkVar(lv))
     {
-        throw "INVALID VARIABLE NAME";
+        throw QString("INVALID VARIABLE NAME");
     }
     connect(rv, &Expression::sig_getVar, this, &Letstmt::getVar, Qt::DirectConnection);
 }
