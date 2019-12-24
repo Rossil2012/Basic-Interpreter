@@ -166,7 +166,7 @@ void Program::de_stop()
     bp.clear();
     Cursor = 0;
     ite_Cursor = Statements.begin();
-    terminateFlag = false;
+    terminateFlag = true;
     normal_end = true;
     emit print("DEBUG OVER.\n");
     emit changeState(0);
@@ -218,6 +218,7 @@ void Program::de_continue()
         }
         de_stepin();
     }
+    terminateFlag = false;
 }
 void Program::de_display()
 {

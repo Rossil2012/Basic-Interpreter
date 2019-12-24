@@ -2,6 +2,7 @@
 #define PROGRAM_HH
 
 #include <QMap>
+#include <QVector>
 #include "statement.hh"
 #include "evalstate.hh"
 
