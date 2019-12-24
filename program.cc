@@ -151,6 +151,7 @@ void Program::terminate()
 void Program::de_start()
 {
     de_on = true;
+    emit changeState(2);
     emit print("Debugger mode is on.\n");
     Vars.clear();
     Cursor = 0;
@@ -168,6 +169,7 @@ void Program::de_stop()
     terminateFlag = false;
     normal_end = true;
     emit print("DEBUG OVER.\n");
+    emit changeState(0);
 }
 
 bool Program::de_setBp(int line)
@@ -202,12 +204,7 @@ void Program::de_showBp()
 }
 void Program::de_stepin()
 {
-    ++ite_Cursor;
-    if (ite_Cursor == Statements.end())
-    {
-        terminate();
-    }
-    Cursor = ite_Cursor.key();
+    ite_Cursor.value()->execute();
 }
 void Program::de_continue()
 {
@@ -219,12 +216,7 @@ void Program::de_continue()
             emit print("Current line: " + Codes[Cursor] + "\n");
             break;
         }
-        if (Statements.isEmpty())
-        {
-            emit print("RUNTIME ERROR: PROGRAM IS EMPTY");
-            de_stop();
-        }
-        ite_Cursor.value()->execute();
+        de_stepin();
     }
 }
 void Program::de_display()

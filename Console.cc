@@ -4,7 +4,7 @@
 #include <QTextCursor>
 
 Console::Console(QWidget *parent)
-    : QTextEdit(parent), State(CODING)
+    : QTextEdit(parent), State(CODING), isInputting(false)
 {
 }
 
@@ -40,9 +40,27 @@ void Console::keyPressEvent(QKeyEvent *event)
         }
         else if (State == RUNNING)
         {
-            inLine = lastLine;
-            inLine.remove(0, 1);
-            emit newInput();
+            if (isInputting)
+            {
+                inLine = lastLine;
+                inLine.remove(0, 1);
+                isInputting = false;
+                emit newInput();
+            }
+        }
+        else if (State == DEBUGGING)
+        {
+            if (isInputting)
+            {
+                inLine = lastLine;
+                inLine.remove(0, 1);
+                isInputting = false;
+                emit newInput();
+            }
+            else
+            {
+                emit newLineWritten(lastLine);
+            }
         }
         return;
     }
@@ -51,6 +69,7 @@ void Console::keyPressEvent(QKeyEvent *event)
 
 void Console::input(QString &in)
 {
+    isInputting = true;
     QEventLoop loop;
     connect(this, &Console::newInput, &loop, &QEventLoop::quit, Qt::DirectConnection);
     loop.exec();
@@ -66,6 +85,10 @@ void Console::changeState(int state)
     else if (state == 1)
     {
         State = RUNNING;
+    }
+    else if (state == 2)
+    {
+        State = DEBUGGING;
     }
 }
 

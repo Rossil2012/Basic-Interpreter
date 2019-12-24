@@ -10,8 +10,9 @@ class Console : public QTextEdit
 {
     Q_OBJECT
 private:
-    enum {CODING, RUNNING} State;
+    enum {CODING, RUNNING, DEBUGGING} State;
     QString inLine;
+    bool isInputting;
 
 public:
     explicit Console(QWidget *parent = nullptr);
